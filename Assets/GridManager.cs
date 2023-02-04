@@ -6,7 +6,11 @@ public class GridManager : MonoBehaviour
 {
     [SerializeField] private GameObject gridSpacePrefab;
     [SerializeField] private Transform gridHoverTransform;
+    [SerializeField] private Transform shopHoverTransform;
     [SerializeField] private Transform gridSelectTransform;
+    // [SerializeField] private GameObject[] shopItems;
+    [SerializeField] private int[] itemCosts;
+    [SerializeField] private GameObject[] shopPrefabs;
 
     int gridYSize = 4;
     int gridXSize = 10;
@@ -32,7 +36,7 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-    private Vector3 gridPosToWorldPos(Vector2Int gridPos) {
+    public Vector3 gridPosToWorldPos(Vector2Int gridPos) {
         return transform.position + new Vector3(gridPos.x, gridPos.y, 0.0f) 
             + Vector3.right * 0.5f
             + Vector3.up * 0.5f;
@@ -58,7 +62,18 @@ public class GridManager : MonoBehaviour
         } else {
             gridHoverTransform.gameObject.SetActive(false);
             if (Input.GetMouseButtonDown(0)) {
-                gridSelect = null;
+                // gridSelect = null;
+            }
+        }
+        if (gridY == -1 && gridX >= 0 && gridY < itemCosts.Length) {
+            gridHoverTransform.gameObject.SetActive(true);
+            gridHoverTransform.position = gridPosToWorldPos(new Vector2Int(gridX, gridY));
+            if (Input.GetMouseButtonDown(0) && gridSelect.HasValue) {
+                var placePos = gridPosToWorldPos(gridSelect.Value);
+                var colliders = Physics2D.OverlapCircleAll(placePos, 0.1f);
+                if (System.Array.Find(colliders, (c) => c.GetComponent<Plant>() != null) == null) {
+                    Instantiate(shopPrefabs[gridX], placePos, Quaternion.identity);
+                }
             }
         }
 

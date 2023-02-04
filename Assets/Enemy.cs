@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     [SerializeField] private int health = 10;
 
@@ -29,16 +24,29 @@ public class Enemy : MonoBehaviour
     IEnumerator Attack() {
         isAttacking = true;
         var startTime = Time.time;
-        var duration = 1.0f;
+        var duration = 2.0f;
         var renderer = GetComponent<SpriteRenderer>();
         while (Time.time < startTime + duration) {
             renderer.color = Color.Lerp(Color.white, Color.red, (Time.time - startTime) / duration);
             yield return null;
         }
-        // attack
+        if (queuedAttackTarget != null) {
+            Destroy(queuedAttackTarget);
+        }
         renderer.color = Color.white;
         isAttacking = false;
     }
+    private GameObject queuedAttackTarget = null;
+
+
+    private void OnCollisionStay2D(Collision2D collision) {
+        var plantComp = collision.gameObject.GetComponent<Plant>();
+        if (plantComp != null && isAttacking == false) {
+            queuedAttackTarget = collision.gameObject;
+            StartCoroutine(Attack());
+        }
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.name == "enemyGoal") {

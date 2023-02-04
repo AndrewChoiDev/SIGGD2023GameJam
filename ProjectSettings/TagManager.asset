@@ -41,11 +41,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: projectile
-    uniqueID: 1244833813
-    locked: 0
   - name: plant
     uniqueID: 124564927
+    locked: 0
+  - name: projectile
+    uniqueID: 1244833813
     locked: 0
   - name: enemy
     uniqueID: 2019756847
