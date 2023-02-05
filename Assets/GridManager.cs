@@ -9,8 +9,13 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Transform shopHoverTransform;
     [SerializeField] private Transform gridSelectTransform;
     // [SerializeField] private GameObject[] shopItems;
-    [SerializeField] private int[] itemCosts;
     [SerializeField] private GameObject[] shopPrefabs;
+    [Multiline]
+    [SerializeField] private TMPro.TMP_Text moneyText;
+    [SerializeField] private TMPro.TMP_Text timeText;
+    [SerializeField] private TMPro.TMP_Text shopDescriptionText;
+
+    private int money = 120;
 
     int gridYSize = 4;
     int gridXSize = 10;
@@ -46,6 +51,9 @@ public class GridManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        }
         var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos = Vector3.ProjectOnPlane(mousePos, Vector3.forward);
         var disp = mousePos - transform.position;
@@ -65,16 +73,49 @@ public class GridManager : MonoBehaviour
                 // gridSelect = null;
             }
         }
-        if (gridY == -1 && gridX >= 0 && gridY < itemCosts.Length) {
+        // shop space hovered
+        if (gridY == -1 && gridX >= 0 && gridX <= shopPrefabs.Length) {
+            // update grid hover to appropriate position
             gridHoverTransform.gameObject.SetActive(true);
             gridHoverTransform.position = gridPosToWorldPos(new Vector2Int(gridX, gridY));
-            if (Input.GetMouseButtonDown(0) && gridSelect.HasValue) {
+
+            // find whether a plant is currently selected in the field grid
+            Plant plantSelected = null;
+            if (gridSelect.HasValue)
+            {
                 var placePos = gridPosToWorldPos(gridSelect.Value);
                 var colliders = Physics2D.OverlapCircleAll(placePos, 0.1f);
-                if (System.Array.Find(colliders, (c) => c.GetComponent<Plant>() != null) == null) {
+                var find = System.Array.Find(colliders, (c) => c.GetComponent<Plant>() != null);
+                plantSelected = find?.GetComponent<Plant>();
+            }
+
+
+            // plant item hovered
+            if (gridX < shopPrefabs.Length) {
+                var plantPrefab = shopPrefabs[gridX];
+                var plantComp = plantPrefab.GetComponent<Plant>();
+                shopDescriptionText.text = plantComp.description;
+
+                // plant the plant
+                if (Input.GetMouseButtonDown(0) 
+                    && plantSelected == null && plantComp.price <= money && gridSelect.HasValue) {
+                    money -= plantComp.price;
+                    var placePos = gridPosToWorldPos(gridSelect.Value);
                     Instantiate(shopPrefabs[gridX], placePos, Quaternion.identity);
                 }
+            // sell option hovered
+            } else {
+                shopDescriptionText.text = "<b>Uproot</b>\nRemoves plant.\nIf the plant is a healhty green, it will be sold for money";
+                // perform sell
+                if (Input.GetMouseButtonDown(0) && plantSelected != null) {
+                    if (plantSelected.lifeStage() == Plant.LifeStage.MATURE) {
+                        money += plantSelected.sellMoney;
+                    }
+                    Destroy(plantSelected.gameObject);
+                }
             }
+        } else {
+            shopDescriptionText.text = "";
         }
 
         if (gridSelect.HasValue) {
@@ -84,6 +125,9 @@ public class GridManager : MonoBehaviour
         } else {
             gridSelectTransform.gameObject.SetActive(false);
         }
+
+        moneyText.text = "money: " + money;
+        timeText.text = "time: " + Mathf.Floor(Time.timeSinceLevelLoad);
         
         // if (Bounds)
     }

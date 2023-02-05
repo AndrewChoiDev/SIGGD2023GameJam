@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        deathTime = Time.time + 5.0f;
+        deathTime = Time.time + 20.0f;
         GetComponent<Rigidbody2D>().velocity = Vector2.right * 1.5f;
     }
 

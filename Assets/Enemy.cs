@@ -6,9 +6,15 @@ public class Enemy : MonoBehaviour
 {
 
     [SerializeField] private int health = 10;
+    [SerializeField] private float speed = 10;
+
+    private Color baseColor;
+
+    private void Start() {
+        baseColor = GetComponent<SpriteRenderer>().color;
+    }
 
     private void FixedUpdate() {
-        var speed = 0.2f;
         GetComponent<Rigidbody2D>().velocity = Vector2.left * speed;
     }
 
@@ -27,13 +33,13 @@ public class Enemy : MonoBehaviour
         var duration = 2.0f;
         var renderer = GetComponent<SpriteRenderer>();
         while (Time.time < startTime + duration) {
-            renderer.color = Color.Lerp(Color.white, Color.red, (Time.time - startTime) / duration);
+            renderer.color = Color.Lerp(baseColor, Color.red, (Time.time - startTime) / duration);
             yield return null;
         }
         if (queuedAttackTarget != null) {
             Destroy(queuedAttackTarget);
         }
-        renderer.color = Color.white;
+        renderer.color = baseColor;
         isAttacking = false;
     }
     private GameObject queuedAttackTarget = null;

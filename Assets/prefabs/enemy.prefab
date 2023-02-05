@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1453599387924644737}
   - component: {fileID: 1453599387924644738}
   - component: {fileID: 1453599387924644736}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 2747690628134850419, guid: a9716c16a44a94eed9b5c90fbf4d9bdd, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.3254717, g: 1, b: 0.9659515, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c538738dc76f6d24b83b3037893089f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 6
+  health: 7
+  speed: 0.17
 --- !u!50 &1453599387924644738
 Rigidbody2D:
   serializedVersion: 4
